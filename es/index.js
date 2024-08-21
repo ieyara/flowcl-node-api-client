@@ -18,7 +18,7 @@ class FlowApi {
         apiKey: this.apiKey,
         ...params
       };
-      let data = this.getPack(params, method);
+      let data = this.getPack(params);
       let sign = this.sign(params);
       let response;
       if (method == "GET") {
@@ -42,7 +42,7 @@ class FlowApi {
       }
     });
   }
-  getPack(params, method) {
+  getPack(params) {
     const keys = Object.keys(params)
       .map(key => key)
       .sort((a, b) => {
@@ -52,13 +52,9 @@ class FlowApi {
       });
     let data = [];
     keys.map(key => {
-      if (method == "GET") {
-        data.push(
-          encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
-        );
-      } else {
-        data.push(key + "=" + params[key]);
-      }
+      data.push(
+        encodeURIComponent(key) + "=" + encodeURIComponent(params[key])
+      );
     });
     return data.join("&");
   }
@@ -72,9 +68,9 @@ class FlowApi {
       });
     let toSign = [];
     keys.map(key => {
-      toSign.push(key + "=" + params[key]);
+      toSign.push(key + params[key]);
     });
-    toSign = toSign.join("&");
+    toSign = toSign.join("");
 
     return CryptoJS.HmacSHA256(toSign, this.secretKey);
   }
